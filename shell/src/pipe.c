@@ -705,9 +705,13 @@ int run_pipeline(atomic *atom_head, int background)
             }
             // if(background==1)
             // printf(" %d", pid);
-            if(i==0 && background == 0)
-            add_process(pid,"pipeline", background);
-
+            if (i == 0 && background == 0)
+            {
+                char buf[256] = "pipeline(";
+                strcat(buf, atom->command);
+                strcat(buf, ")");
+                add_process(pid, buf, background);
+            }
         }
         atom = atom->next;
         i++;
@@ -745,7 +749,7 @@ int run_pipeline(atomic *atom_head, int background)
         }
         else
         {
-                waitpid(pids[j], &status, 0);
+            waitpid(pids[j], &status, 0);
         }
     }
     if (background == 0)
@@ -787,9 +791,12 @@ void run_command(cmd_group *curr)
                 if (bgpgrp == -1)
                     bgpgrp = pid;
                 setpgid(pid, pid);
-                if(count_atoms(curr->atom)>1)
+                if (count_atoms(curr->atom) > 1)
                 {
-                    int job_number = add_process(pid, "pipeline", 1);
+                    char buf[256] = "pipeline(";
+                    strcat(buf, curr->atom->command);
+                    strcat(buf, ")");
+                    int job_number = add_process(pid, buf, 1);
                     printf("[%d] %d\n", job_number, pid);
                 }
                 else
