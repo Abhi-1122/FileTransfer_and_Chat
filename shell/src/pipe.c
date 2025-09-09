@@ -706,7 +706,8 @@ int run_pipeline(atomic *atom_head, int background)
             // if(background==1)
             // printf(" %d", pid);
             if(i==0 && background == 0)
-            add_process(pid, atom->command, background);
+            add_process(pid,"pipeline", background);
+
         }
         atom = atom->next;
         i++;
