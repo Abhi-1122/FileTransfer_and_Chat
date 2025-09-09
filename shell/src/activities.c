@@ -131,6 +131,13 @@ void check_background_jobs(void)
                            process_list[i].command_name,
                            process_list[i].pid);
                 }
+                else
+                {
+                    printf("%s with pid %d exited abnormally with code %d\n",
+                           process_list[i].command_name,
+                           process_list[i].pid,
+                           exit_code);
+                }
                 process_list[i].state = 2;
             }
             else if (WIFSTOPPED(status))
@@ -220,7 +227,8 @@ int activities_command(char **tokens, int token_count)
         }
         else if (active_processes[i].state == 2)
         {
-            snprintf(status, sizeof(status), "Terminated");
+            // snprintf(status, sizeof(status), "Terminated");
+            continue;
         }
 
         printf("[%d] : %s - %s\n",

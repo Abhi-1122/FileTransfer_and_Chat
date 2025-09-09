@@ -703,7 +703,9 @@ int run_pipeline(atomic *atom_head, int background)
                     forepgrp = pid;
                 setpgid(pid, forepgrp);
             }
-            if(i==0)
+            // if(background==1)
+            // printf(" %d", pid);
+            if(i==0 && background == 0)
             add_process(pid, atom->command, background);
         }
         atom = atom->next;
@@ -742,7 +744,7 @@ int run_pipeline(atomic *atom_head, int background)
         }
         else
         {
-            waitpid(pids[j], &status, WNOHANG);
+                waitpid(pids[j], &status, 0);
         }
     }
     if (background == 0)
@@ -768,12 +770,12 @@ void run_command(cmd_group *curr)
                     bgpgrp = getpid();
                 setpgid(0, 0);
 
-                int null_fd = open("/dev/null", O_RDONLY);
-                if (null_fd != -1)
-                {
-                    dup2(null_fd, STDIN_FILENO);
-                    close(null_fd);
-                }
+                // int null_fd = open("/dev/null", O_RDONLY);
+                // if (null_fd != -1)
+                // {
+                //     dup2(null_fd, STDIN_FILENO);
+                //     close(null_fd);
+                // }
 
                 int pipeline_result = run_pipeline(curr->atom, 1);
                 // Exit with the actual result from the pipeline
@@ -784,9 +786,16 @@ void run_command(cmd_group *curr)
                 if (bgpgrp == -1)
                     bgpgrp = pid;
                 setpgid(pid, pid);
-
-                int job_number = add_process(pid, curr->atom->command, 1);
-                printf("[%d] %d\n", job_number, pid);
+                if(count_atoms(curr->atom)>1)
+                {
+                    int job_number = add_process(pid, "pipeline", 1);
+                    printf("[%d] %d\n", job_number, pid);
+                }
+                else
+                {
+                    int job_number = add_process(pid, curr->atom->command, 1);
+                    printf("[%d] %d\n", job_number, pid);
+                }
             }
             else
             {
