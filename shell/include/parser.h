@@ -6,6 +6,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include "file.h"
 
 // Forward declarations
 struct atomic;
@@ -18,6 +19,8 @@ typedef struct atomic
     int redirection; // 0: none, 1: input, 2: output, 3: append, 4: inp&out, 5: inp&append
     char * input_file;
     char * output_file;
+    int inp_fail;
+    int out_fail;
     struct atomic* next;
 } atomic;
 

@@ -133,7 +133,7 @@ int run_atomic(atomic *atom, int background)
         if (atom->args)
             ret = hop_command(atom->args);
         else
-            ret = hop_command(";");
+            ret = hop_command("~");
     }
     else if (strcmp(atom->command, "reveal") == 0)
     {
@@ -483,7 +483,7 @@ int run_atomic_bg(atomic *atom, int background)
         if (atom->args)
             ret = hop_command(atom->args);
         else
-            ret = hop_command(";");
+            ret = hop_command("~");
     }
     else if (strcmp(atom->command, "reveal") == 0)
     {
@@ -630,7 +630,7 @@ int run_pipeline(atomic *atom_head, int background)
             }
             if (strcmp(atom->command, "hop") == 0)
             {
-                exit(hop_command(atom->args ? atom->args : ";"));
+                exit(hop_command(atom->args ? atom->args : "~"));
             }
             else if (strcmp(atom->command, "reveal") == 0)
             {

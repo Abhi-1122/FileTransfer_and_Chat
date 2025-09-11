@@ -92,6 +92,8 @@ cmd_group *build_list(char ***parsed, int tokens)
             curr_atomic->input_file = NULL;
             curr_atomic->output_file = NULL;
             curr_atomic->next = NULL;
+            curr_atomic->inp_fail = 0;
+            curr_atomic->out_fail = 0;
             inp = 0;
 
             // Link into current group's atomic list
@@ -144,8 +146,15 @@ cmd_group *build_list(char ***parsed, int tokens)
         // Handle redirections
         if (tok[0] == '<')
         {
+            char* temp = strdup(tok + 1);
+            int fail = open_file_for_read(temp);
+            if(curr_atomic->inp_fail == 0)
+                curr_atomic->input_file = temp;
+            if (fail < 0)
+                curr_atomic->inp_fail = 1;
+            close_file(fail);
+
             inp = 1;
-            curr_atomic->input_file = strdup(tok + 1); // after '<'
             i++;
             if (curr_atomic->redirection == 2)
                 curr_atomic->redirection = 4;
@@ -161,8 +170,16 @@ cmd_group *build_list(char ***parsed, int tokens)
         }
         else if (tok[0] == '>' && tok[1] == '>')
         {
+            char* temp = strdup(tok + 2);
+            int fail = open_file_for_append(temp);
+            if(curr_atomic->out_fail == 0)
+                curr_atomic->output_file = temp;
+            if (fail < 0)
+                curr_atomic->out_fail = 1;
+            close_file(fail);
+
+
             curr_atomic->redirection = 3;
-            curr_atomic->output_file = strdup(tok + 2);
             i++;
             if (curr_atomic->redirection == 5)
             {
@@ -175,8 +192,16 @@ cmd_group *build_list(char ***parsed, int tokens)
         }
         else if (tok[0] == '>')
         {
+            char* temp = strdup(tok + 1);
+            int fail = open_file_for_write(temp);
+            if(curr_atomic->out_fail == 0)
+                curr_atomic->output_file = temp;
+            if (fail < 0)
+                curr_atomic->out_fail = 1;
+            close_file(fail);
+
+
             curr_atomic->redirection = 2;
-            curr_atomic->output_file = strdup(tok + 1);
             i++;
             if (curr_atomic->redirection == 4)
             {
